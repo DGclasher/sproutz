@@ -1,8 +1,8 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Plant } from 'src/schemas/plant.schema';
-import { Order } from 'src/schemas/order.schema';
+import { Plant } from '../schemas/plant.schema';
+import { Order } from '../schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreatePlantDto } from './dto/create-plan.dto';
 
