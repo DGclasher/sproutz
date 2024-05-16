@@ -37,6 +37,9 @@ export class ApiService {
       status: order.status,
       total: total,
       items: order.items,
+      customer: order.customer,
+      address: order.address,
+      phone: order.phone,
     });
     return newOrder;
   }

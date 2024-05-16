@@ -1,9 +1,11 @@
-import { Optional } from '@nestjs/common';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 
 export class CreateOrderDto {
-  @Optional()
+  @IsOptional()
   @IsEnum(['pending', 'completed', 'cancelled'])
   status: string;
   items: { plant: string; quantity: number }[];
+  customer: string;
+  address: string;
+  phone: string;
 }

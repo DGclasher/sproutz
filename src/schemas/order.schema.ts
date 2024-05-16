@@ -26,6 +26,15 @@ export class Order {
     ],
   })
   items: { plant: PlantDocument; quantity: number }[];
+
+  @Prop({ required: true })
+  customer: string;
+
+  @Prop({ required: true })
+  address: string;
+
+  @Prop({ required: true })
+  phone: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
