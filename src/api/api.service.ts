@@ -1,10 +1,11 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Plant } from '../schemas/plant.schema';
 import { Order } from '../schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreatePlantDto } from './dto/create-plan.dto';
+import { validateEmail } from '../lib/utils';
 
 @Injectable()
 export class ApiService {
@@ -26,22 +27,31 @@ export class ApiService {
   }
 
   async createOrder(order: CreateOrderDto): Promise<Order> {
-    let total: number = 0;
-    await Promise.all(
-      order.items.map(async (item) => {
-        const plantObj: any = await this.plantModel.findById(item.plant);
-        total += plantObj.price * item.quantity;
-      }),
-    );
-    const newOrder = await this.orderModel.create({
-      status: order.status,
-      total: total,
-      items: order.items,
-      customer: order.customer,
-      address: order.address,
-      phone: order.phone,
-    });
-    return newOrder;
+    try {
+      const valid = await validateEmail(order.email);
+      if (!valid) {
+        throw new BadRequestException('Invalid email');
+      }
+      let total: number = 0;
+      await Promise.all(
+        order.items.map(async (item) => {
+          const plantObj: any = await this.plantModel.findById(item.plant);
+          total += plantObj.price * item.quantity;
+        }),
+      );
+      const newOrder = await this.orderModel.create({
+        status: order.status,
+        total: total,
+        items: order.items,
+        customer: order.customer,
+        address: order.address,
+        phone: order.phone,
+        email: order.email,
+      });
+      return newOrder;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   async getOrders(): Promise<Order[]> {

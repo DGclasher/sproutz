@@ -1,3 +1,4 @@
+import { sendEmail } from '../lib/utils';
 import { ApiService } from './api.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreatePlantDto } from './dto/create-plan.dto';
@@ -8,6 +9,8 @@ import {
   Body,
   ValidationPipe,
   Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 
 @Controller('api')
@@ -26,7 +29,34 @@ export class ApiController {
 
   @Post('order')
   async createOrder(@Body(new ValidationPipe()) orderDto: CreateOrderDto) {
-    return this.apiService.createOrder(orderDto);
+    try {
+      const res = await this.apiService.createOrder(orderDto);
+      const itemsWithNames = await Promise.all(
+        orderDto.items.map(async (item) => {
+          const plant = await this.apiService.getPlant(item.plant);
+          return { ...item, plantName: plant.name };
+        }),
+      );
+      await sendEmail(
+        orderDto.email,
+        'Order Confirmation',
+        orderDto,
+        (res as any)._id,
+        res.total,
+        itemsWithNames,
+      );
+      return res;
+    } catch (error) {
+      throw new HttpException(
+        {
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error.message,
+        },
+      );
+    }
   }
 
   @Get('orders')

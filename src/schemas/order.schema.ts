@@ -35,6 +35,9 @@ export class Order {
 
   @Prop({ required: true })
   phone: string;
+
+  @Prop({ required: true })
+  email: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
