@@ -11,6 +11,7 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Delete,
 } from '@nestjs/common';
 
 @Controller('api')
@@ -25,6 +26,11 @@ export class ApiController {
   @Post('plant')
   async createPlant(@Body(new ValidationPipe()) plantDto: CreatePlantDto) {
     return this.apiService.createPlant(plantDto);
+  }
+
+  @Get('plant/:id')
+  async getPlant(@Param('id') id: string) {
+    return this.apiService.getPlant(id);
   }
 
   @Post('order')
@@ -72,5 +78,10 @@ export class ApiController {
   @Get('order/:id/plants')
   async getPlantFromOrder(@Param('id') id: string) {
     return this.apiService.getPlantFromOrder(id);
+  }
+
+  @Delete('orders')
+  async deleteOrders() {
+    return this.apiService.deleteAllOrders();
   }
 }

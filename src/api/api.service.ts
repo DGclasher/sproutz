@@ -71,4 +71,15 @@ export class ApiService {
     );
     return plants;
   }
+
+  async deleteAllOrders(): Promise<boolean> {
+    try {
+      const count = await this.orderModel.deleteMany({});
+      console.log(count.deletedCount);
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error deleting orders');
+    }
+  }
 }
